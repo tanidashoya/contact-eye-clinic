@@ -4,13 +4,20 @@ import { revalidatePath } from "next/cache";
 
 export default async function insertEyecareEvent() {
   const supabase = await createClient();
-  const { data: user } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: getUserError,
+  } = await supabase.auth.getUser();
+  if (getUserError) {
+    console.error(getUserError);
+    return { error: getUserError.message };
+  }
   //眼科受診イベント設定を取得
   const { data: eyeCareEventSettings, error: eyeCareEventSettingsError } =
     await supabase
       .from("event_settings")
       .select("*")
-      .eq("user_id", user.user?.id ?? "")
+      .eq("user_id", user?.id ?? "")
       .eq("event_type", "clinic")
       .single();
   if (!eyeCareEventSettings || eyeCareEventSettingsError) {
@@ -23,7 +30,7 @@ export default async function insertEyecareEvent() {
 
   //眼科受診イベントを挿入
   const { error: eyeCareEventError } = await supabase.from("events").insert({
-    user_id: user.user?.id,
+    user_id: user?.id ?? "",
     event_type: "clinic",
     occurred_at: new Date().toISOString().slice(0, 10),
     cycle_days: eyeCareEventCycle ?? 180,

@@ -4,14 +4,21 @@ import { revalidatePath } from "next/cache";
 
 export default async function insertContactEvents() {
   const supabase = await createClient();
-  const { data: user } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: getUserError,
+  } = await supabase.auth.getUser();
 
+  if (getUserError) {
+    console.error(getUserError);
+    return { error: getUserError.message };
+  }
   //コンタクト交換イベント設定を取得
   const { data: contactEventSettings, error: contactEventSettingsError } =
     await supabase
       .from("event_settings")
       .select("*")
-      .eq("user_id", user.user?.id ?? "")
+      .eq("user_id", user?.id ?? "")
       .eq("event_type", "contact")
       .single();
   if (!contactEventSettings || contactEventSettingsError) {
@@ -23,7 +30,7 @@ export default async function insertContactEvents() {
 
   //コンタクト交換イベントを挿入
   const { error: contactEventError } = await supabase.from("events").insert({
-    user_id: user.user?.id,
+    user_id: user?.id ?? "",
     event_type: "contact",
     occurred_at: new Date().toISOString().slice(0, 10),
     cycle_days: contactEventCycle ?? 14,
