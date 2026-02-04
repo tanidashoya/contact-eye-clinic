@@ -20,3 +20,12 @@ export interface SettingSheetClientProps {
   contactSettings?: EventSettings;
   clinicSettings?: EventSettings;
 }
+
+export interface UserSettingsProps {
+  isnotification: boolean;
+  setIsnotification: (isnotification: boolean) => void;
+  clinicNotifyBeforeDays: number;
+  setClinicNotifyBeforeDays: (clinicNotifyBeforeDays: number) => void;
+  contactNotifyBeforeDays: number;
+  setContactNotifyBeforeDays: (contactNotifyBeforeDays: number) => void;
+}
