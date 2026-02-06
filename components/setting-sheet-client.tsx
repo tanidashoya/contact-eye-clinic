@@ -7,11 +7,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "./ui/button";
-import { Bell, CalendarCog } from "lucide-react";
+import { CalendarCog } from "lucide-react";
 import { useState } from "react";
 import { SettingSheetClientProps } from "@/types";
-import { Switch } from "./ui/switch";
-import { Input } from "./ui/input";
+
 import UserSettings from "./user-settings";
 import ContactClinicSettings from "./contact-clinic-settings";
 
@@ -22,20 +21,16 @@ export default function SettingSheetClient({
   clinicSettings,
 }: SettingSheetClientProps) {
   const [isnotification, setIsnotification] = useState(
-    userSettings?.notify_enabled ?? false,
+    userSettings.notify_enabled,
   );
   const [clinicNotifyBeforeDays, setClinicNotifyBeforeDays] = useState(
-    userSettings?.clinic_notify_before_days ?? 14,
+    userSettings.clinic_notify_before_days,
   );
   const [contactNotifyBeforeDays, setContactNotifyBeforeDays] = useState(
-    userSettings?.contact_notify_before_days ?? 1,
+    userSettings.contact_notify_before_days,
   );
-  const [contactCycle, setContactCycle] = useState(
-    contactSettings?.cycle_days ?? 14,
-  );
-  const [eyeCareCycle, setEyeCareCycle] = useState(
-    clinicSettings?.cycle_days ?? 180,
-  );
+  const [contactCycle, setContactCycle] = useState(contactSettings.cycle_days);
+  const [clinicCycle, setClinicCycle] = useState(clinicSettings.cycle_days);
 
   return (
     <Sheet>
@@ -60,10 +55,11 @@ export default function SettingSheetClient({
           setContactNotifyBeforeDays={setContactNotifyBeforeDays}
         />
         <ContactClinicSettings
+          userId={userId}
           contactCycle={contactCycle}
           setContactCycle={setContactCycle}
-          eyeCareCycle={eyeCareCycle}
-          setEyeCareCycle={setEyeCareCycle}
+          clinicCycle={clinicCycle}
+          setClinicCycle={setClinicCycle}
         />
       </SheetContent>
     </Sheet>

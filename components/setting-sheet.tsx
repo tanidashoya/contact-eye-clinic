@@ -8,7 +8,7 @@ export default async function SettingSheet() {
     error: getUserError,
   } = await supabase.auth.getUser();
 
-  if (getUserError) {
+  if (getUserError || !user) {
     console.error(getUserError);
     throw new Error("ユーザーの取得に失敗しました");
   }
@@ -22,7 +22,7 @@ export default async function SettingSheet() {
   const { data: userSettings, error: userSettingsError } = await supabase
     .from("user_settings")
     .select("*")
-    .eq("user_id", user?.id ?? "")
+    .eq("user_id", user.id)
     .single();
   if (userSettingsError) {
     console.error(userSettingsError);
@@ -33,7 +33,7 @@ export default async function SettingSheet() {
   const { data: contactSettings, error: contactSettingsError } = await supabase
     .from("event_settings")
     .select("*")
-    .eq("user_id", user?.id ?? "")
+    .eq("user_id", user.id)
     .eq("event_type", "contact")
     .single();
   if (contactSettingsError) {
@@ -45,7 +45,7 @@ export default async function SettingSheet() {
   const { data: clinicSettings, error: clinicSettingsError } = await supabase
     .from("event_settings")
     .select("*")
-    .eq("user_id", user?.id ?? "")
+    .eq("user_id", user.id)
     .eq("event_type", "clinic")
     .single();
   if (clinicSettingsError) {
@@ -55,7 +55,7 @@ export default async function SettingSheet() {
 
   return (
     <SettingSheetClient
-      userId={user?.id}
+      userId={user.id}
       userSettings={userSettings}
       contactSettings={contactSettings}
       clinicSettings={clinicSettings}

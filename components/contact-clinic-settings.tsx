@@ -1,19 +1,33 @@
+"use client";
 import { Calendar } from "lucide-react";
-import { Input } from "./ui/input";
-
-interface ContactClinicSettingsProps {
-  contactCycle: number;
-  setContactCycle: (contactCycle: number) => void;
-  eyeCareCycle: number;
-  setEyeCareCycle: (eyeCareCycle: number) => void;
-}
+import NumberInput from "./number-input";
+import updateContactSettings from "@/app/(private)/action/update-contact-settings";
+import updateClinicSettings from "@/app/(private)/action/update-clinic-settings";
+import { ContactClinicSettingsProps } from "@/types";
 
 export default function ContactClinicSettings({
+  userId,
   contactCycle,
   setContactCycle,
-  eyeCareCycle,
-  setEyeCareCycle,
+  clinicCycle,
+  setClinicCycle,
 }: ContactClinicSettingsProps) {
+  const handleContactCycleChange = (value: number) => {
+    setContactCycle(value); //正解の値を更新
+    updateContactSettings({
+      userId: userId,
+      contactCycle: value,
+    });
+  };
+
+  const handleClinicCycleChange = (value: number) => {
+    setClinicCycle(value); //正解の値を更新
+    updateClinicSettings({
+      userId: userId,
+      clinicCycle: value,
+    });
+  };
+
   return (
     <>
       <div className="flex items-center ml-4 gap-2 mb-2 mt-6">
@@ -23,20 +37,18 @@ export default function ContactClinicSettings({
       <div className="flex flex-col mx-4 px-2 gap-6">
         <div className="flex flex-col gap-2">
           <label htmlFor="contactCycle">コンタクト交換の周期</label>
-          <Input
+          <NumberInput
             id="contactCycle"
-            type="number"
-            value={contactCycle}
-            onChange={(e) => setContactCycle(Number(e.target.value))}
+            numberValue={contactCycle}
+            onValueChange={handleContactCycleChange}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label htmlFor="eyeCareCycle">眼科受診の周期</label>
-          <Input
-            id="eyeCareCycle"
-            type="number"
-            value={eyeCareCycle}
-            onChange={(e) => setEyeCareCycle(Number(e.target.value))}
+          <label htmlFor="clinicCycle">眼科受診の周期</label>
+          <NumberInput
+            id="clinicCycle"
+            numberValue={clinicCycle}
+            onValueChange={handleClinicCycleChange}
           />
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import { Bell } from "lucide-react";
 import { Switch } from "./ui/switch";
-import { Input } from "./ui/input";
+import NumberInput from "./number-input";
 import { UserSettingsProps } from "@/types";
 
 export default function UserSettings({
@@ -34,22 +34,20 @@ export default function UserSettings({
           <label htmlFor="contactNotifyBeforeDays">
             コンタクト交換の通知前日数
           </label>
-          <Input
+          <NumberInput
             id="contactNotifyBeforeDays"
-            type="number"
-            value={contactNotifyBeforeDays}
+            numberValue={contactNotifyBeforeDays}
             disabled={!isnotification}
-            onChange={(e) => setContactNotifyBeforeDays(Number(e.target.value))}
+            onValueChange={setContactNotifyBeforeDays}
           />
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="clinicNotifyBeforeDays">眼科受診の通知前日数</label>
-          <Input
+          <NumberInput
             id="clinicNotifyBeforeDays"
-            type="number"
-            value={clinicNotifyBeforeDays}
+            numberValue={clinicNotifyBeforeDays}
             disabled={!isnotification}
-            onChange={(e) => setClinicNotifyBeforeDays(Number(e.target.value))}
+            onValueChange={setClinicNotifyBeforeDays}
           />
         </div>
       </div>

@@ -15,10 +15,10 @@ export interface UserSettings {
 }
 
 export interface SettingSheetClientProps {
-  userId?: string;
-  userSettings?: UserSettings;
-  contactSettings?: EventSettings;
-  clinicSettings?: EventSettings;
+  userId: string;
+  userSettings: UserSettings;
+  contactSettings: EventSettings;
+  clinicSettings: EventSettings;
 }
 
 export interface UserSettingsProps {
@@ -28,4 +28,22 @@ export interface UserSettingsProps {
   setClinicNotifyBeforeDays: (clinicNotifyBeforeDays: number) => void;
   contactNotifyBeforeDays: number;
   setContactNotifyBeforeDays: (contactNotifyBeforeDays: number) => void;
+}
+
+export interface UpdateContactSettingsProps {
+  userId: string;
+  contactCycle: number;
+}
+
+export interface UpdateClinicSettingsProps {
+  userId: string;
+  clinicCycle: number;
+}
+
+export interface ContactClinicSettingsProps {
+  userId: string;
+  contactCycle: number;
+  setContactCycle: (contactCycle: number) => void;
+  clinicCycle: number;
+  setClinicCycle: (eyeCareCycle: number) => void;
 }

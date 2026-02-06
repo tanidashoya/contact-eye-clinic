@@ -1,10 +1,6 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
-
-interface UpdateContactSettingsProps {
-  userId: string;
-  contactCycle: number;
-}
+import { UpdateContactSettingsProps } from "@/types";
 
 export default async function updateContactSettings({
   userId,
