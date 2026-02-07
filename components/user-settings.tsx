@@ -6,6 +6,7 @@ import NumberInput from "./number-input";
 import { UserSettingsProps } from "@/types";
 
 export default function UserSettings({
+  user,
   isnotification,
   setIsnotification,
   clinicNotifyBeforeDays,
@@ -15,15 +16,16 @@ export default function UserSettings({
 }: UserSettingsProps) {
   return (
     <>
-      <div className="flex items-center ml-4 gap-2 mb-2">
+      <div className="flex items-center ml-4 gap-2 mb-4">
         <Bell size={25} color="gray" />
         <h2 className="text-lg font-bold">通知設定</h2>
       </div>
-      <div className="px-2 flex flex-col gap-6 mx-4">
+      <div className="px-2 flex flex-col gap-4 mx-4 mb-2">
         <div className="flex items-center gap-6">
           <label htmlFor="isnotification">通知を受け取る</label>
           {/* switchで状態を変換しているがDBの値は変わっていないので同期するようにしなければならない */}
           <Switch
+            size="lg"
             id="isnotification"
             checked={isnotification}
             onCheckedChange={setIsnotification}

@@ -5,14 +5,45 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { login } from "./action";
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
   const handleSubmit = async (formData: FormData) => {
     const result = await login(formData); //resultは{ error: string | undefined } | undefined 型のオブジェクト(エラーの時のみ返す)
     if (result?.error) {
       toast.error(result.error);
     }
   };
+
+  useEffect(() => {
+    const error = searchParams.get("error");
+    switch (error) {
+      case "user_not_found":
+        toast.error("ユーザーが見つかりません。再度ログインしてください。");
+        break;
+      case "user_settings_not_found":
+        toast.error(
+          "ユーザー通知設定が見つかりません。再度ログインしてください。",
+        );
+        break;
+      case "contact_settings_not_found":
+        toast.error(
+          "コンタクト交換イベント設定が見つかりません。再度ログインしてください。",
+        );
+        break;
+      case "clinic_settings_not_found":
+        toast.error(
+          "眼科受診イベント設定が見つかりません。再度ログインしてください。",
+        );
+        break;
+      case "get_new_event_error":
+        toast.error("イベントの取得に失敗しました。再度ログインしてください。");
+        break;
+    }
+  }, [searchParams]);
+
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-8">
       <form className="flex flex-col gap-4">

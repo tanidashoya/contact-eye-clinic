@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import SettingSheetClient from "./setting-sheet-client";
+import { redirect } from "next/navigation";
 
 export default async function SettingSheet() {
   const supabase = await createClient();
@@ -10,7 +11,7 @@ export default async function SettingSheet() {
 
   if (getUserError || !user) {
     console.error(getUserError);
-    throw new Error("ユーザーの取得に失敗しました");
+    redirect("/login?error=user_not_found");
   }
 
   //middreware.tsで認証チェックしているので、ここではチェックしない
@@ -26,7 +27,7 @@ export default async function SettingSheet() {
     .single();
   if (userSettingsError) {
     console.error(userSettingsError);
-    throw new Error("ユーザー通知設定の取得に失敗しました");
+    redirect("/login?error=user_settings_not_found");
   }
 
   //コンタクト交換イベント設定を取得
@@ -38,7 +39,7 @@ export default async function SettingSheet() {
     .single();
   if (contactSettingsError) {
     console.error(contactSettingsError);
-    throw new Error("コンタクト交換イベント設定の取得に失敗しました");
+    redirect("/login?error=contact_settings_not_found");
   }
 
   //眼科受診イベント設定を取得
@@ -50,12 +51,12 @@ export default async function SettingSheet() {
     .single();
   if (clinicSettingsError) {
     console.error(clinicSettingsError);
-    throw new Error("眼科受診イベント設定の取得に失敗しました");
+    redirect("/login?error=clinic_settings_not_found");
   }
 
   return (
     <SettingSheetClient
-      userId={user.id}
+      user={user}
       userSettings={userSettings}
       contactSettings={contactSettings}
       clinicSettings={clinicSettings}

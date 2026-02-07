@@ -8,9 +8,11 @@ export default async function Home() {
   const supabase = await createClient();
   const {
     data: { user },
+    error: getUserError,
   } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/login");
+  if (getUserError || !user) {
+    console.error(getUserError);
+    redirect("/login?error=user_not_found");
   }
 
   const {
@@ -20,10 +22,10 @@ export default async function Home() {
   } = await getNewEvents(user.id);
   if (getNewEventError) {
     console.error(getNewEventError);
-    throw new Error(getNewEventError); //エラーをthrowしてエラーページ(error.tsx)にリダイレクト(アプリの根本的なエラーの場合はthrowする)
+    redirect("/login?error=get_new_event_error");
   }
   return (
-    <div>
+    <div className="w-full flex flex-col items-center justify-center gap-16">
       <Section title="コンタクト交換">
         <DateDisplay
           eventType="contact"

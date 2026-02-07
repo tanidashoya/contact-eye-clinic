@@ -6,7 +6,7 @@ interface SectionProps {
 
 export default function Section({ title, children }: SectionProps) {
   return (
-    <div className="flex flex-col items-center justify-center mb-12">
+    <div className="flex flex-col items-center justify-center w-full">
       <h2 className="text-2xl font-bold">{title}</h2>
       {children}
     </div>

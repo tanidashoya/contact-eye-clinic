@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { UpdateClinicSettingsProps } from "@/types";
 
 export default async function updateClinicSettings({
-  userId,
+  user,
   clinicCycle,
 }: UpdateClinicSettingsProps) {
   const supabase = await createClient();
@@ -13,7 +13,7 @@ export default async function updateClinicSettings({
     .update({
       cycle_days: clinicCycle,
     })
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .eq("event_type", "clinic");
   if (updateClinicSettingsError) {
     console.error(updateClinicSettingsError);

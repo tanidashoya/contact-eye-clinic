@@ -6,7 +6,7 @@ import updateClinicSettings from "@/app/(private)/action/update-clinic-settings"
 import { ContactClinicSettingsProps } from "@/types";
 
 export default function ContactClinicSettings({
-  userId,
+  user,
   contactCycle,
   setContactCycle,
   clinicCycle,
@@ -15,7 +15,7 @@ export default function ContactClinicSettings({
   const handleContactCycleChange = (value: number) => {
     setContactCycle(value); //正解の値を更新
     updateContactSettings({
-      userId: userId,
+      user: user,
       contactCycle: value,
     });
   };
@@ -23,18 +23,18 @@ export default function ContactClinicSettings({
   const handleClinicCycleChange = (value: number) => {
     setClinicCycle(value); //正解の値を更新
     updateClinicSettings({
-      userId: userId,
+      user: user,
       clinicCycle: value,
     });
   };
 
   return (
     <>
-      <div className="flex items-center ml-4 gap-2 mb-2 mt-6">
+      <div className="flex items-center ml-4 gap-2 mt-6 mb-4">
         <Calendar size={25} color="gray" />
-        <h2 className="text-lg font-bold">コンタクト交換・眼科受診</h2>
+        <h2 className="text-lg font-bold truncate">コンタクト交換・眼科受診</h2>
       </div>
-      <div className="flex flex-col mx-4 px-2 gap-6">
+      <div className="flex flex-col mx-4 px-2 gap-4">
         <div className="flex flex-col gap-2">
           <label htmlFor="contactCycle">コンタクト交換の周期</label>
           <NumberInput

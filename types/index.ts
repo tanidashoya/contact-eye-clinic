@@ -1,3 +1,5 @@
+import { User } from "@supabase/supabase-js";
+
 export interface EventSettings {
   user_id: string;
   event_type: string;
@@ -15,13 +17,14 @@ export interface UserSettings {
 }
 
 export interface SettingSheetClientProps {
-  userId: string;
+  user: User;
   userSettings: UserSettings;
   contactSettings: EventSettings;
   clinicSettings: EventSettings;
 }
 
 export interface UserSettingsProps {
+  user: User;
   isnotification: boolean;
   setIsnotification: (isnotification: boolean) => void;
   clinicNotifyBeforeDays: number;
@@ -31,19 +34,30 @@ export interface UserSettingsProps {
 }
 
 export interface UpdateContactSettingsProps {
-  userId: string;
+  user: User;
   contactCycle: number;
 }
 
 export interface UpdateClinicSettingsProps {
-  userId: string;
+  user: User;
   clinicCycle: number;
 }
 
 export interface ContactClinicSettingsProps {
-  userId: string;
+  user: User;
   contactCycle: number;
   setContactCycle: (contactCycle: number) => void;
   clinicCycle: number;
   setClinicCycle: (eyeCareCycle: number) => void;
+}
+
+export interface LogoutDialogProps {
+  handleLogout: () => void;
+  isLoading: boolean;
+}
+
+export interface DateDisplayProps {
+  eventType?: string;
+  occurredAt?: string;
+  next?: string;
 }

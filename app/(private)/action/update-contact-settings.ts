@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { UpdateContactSettingsProps } from "@/types";
 
 export default async function updateContactSettings({
-  userId,
+  user,
   contactCycle,
 }: UpdateContactSettingsProps) {
   const supabase = await createClient();
@@ -13,7 +13,7 @@ export default async function updateContactSettings({
     .update({
       cycle_days: contactCycle,
     })
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .eq("event_type", "contact");
   if (updateContactSettingsError) {
     console.error(updateContactSettingsError);
