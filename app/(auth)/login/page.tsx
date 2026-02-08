@@ -6,12 +6,13 @@ import Link from "next/link";
 import { login } from "./action";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const searchParams = useSearchParams();
   const handleSubmit = async (formData: FormData) => {
-    const result = await login(formData); //resultは{ error: string | undefined } | undefined 型のオブジェクト(エラーの時のみ返す)
+    const result = await login(formData);
     if (result?.error) {
       toast.error(result.error);
     }
@@ -25,17 +26,17 @@ export default function LoginPage() {
         break;
       case "user_settings_not_found":
         toast.error(
-          "ユーザー通知設定が見つかりません。再度ログインしてください。",
+          "ユーザー通知設定が見つかりません。再度ログインしてください。"
         );
         break;
       case "contact_settings_not_found":
         toast.error(
-          "コンタクト交換イベント設定が見つかりません。再度ログインしてください。",
+          "コンタクト交換イベント設定が見つかりません。再度ログインしてください。"
         );
         break;
       case "clinic_settings_not_found":
         toast.error(
-          "眼科受診イベント設定が見つかりません。再度ログインしてください。",
+          "眼科受診イベント設定が見つかりません。再度ログインしてください。"
         );
         break;
       case "get_new_event_error":
@@ -84,5 +85,19 @@ export default function LoginPage() {
         新規登録はこちら
       </Link>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-screen">
+          <Loader2 className="w-10 h-10 animate-spin" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
