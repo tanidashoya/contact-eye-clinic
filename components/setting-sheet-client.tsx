@@ -15,6 +15,7 @@ import ContactClinicSettings from "./contact-clinic-settings";
 import { logout } from "@/app/(private)/action/logout";
 import { toast } from "sonner";
 import LogoutDialog from "./logout-dialog";
+import OneSignal from "react-onesignal";
 
 export default function SettingSheetClient({
   user,
@@ -23,13 +24,13 @@ export default function SettingSheetClient({
   clinicSettings,
 }: SettingSheetClientProps) {
   const [isnotification, setIsnotification] = useState(
-    userSettings.notify_enabled,
+    userSettings.notify_enabled
   );
   const [clinicNotifyBeforeDays, setClinicNotifyBeforeDays] = useState(
-    userSettings.clinic_notify_before_days,
+    userSettings.clinic_notify_before_days
   );
   const [contactNotifyBeforeDays, setContactNotifyBeforeDays] = useState(
-    userSettings.contact_notify_before_days,
+    userSettings.contact_notify_before_days
   );
   const [contactCycle, setContactCycle] = useState(contactSettings.cycle_days);
   const [clinicCycle, setClinicCycle] = useState(clinicSettings.cycle_days);
@@ -42,7 +43,9 @@ export default function SettingSheetClient({
     if (logoutError) {
       console.error(logoutError);
       toast.error("ログアウトに失敗しました");
+      return;
     }
+    await OneSignal.logout();
     setIsLoading(false);
   };
 

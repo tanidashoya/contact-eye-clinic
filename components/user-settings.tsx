@@ -4,6 +4,8 @@ import { Bell } from "lucide-react";
 import { Switch } from "./ui/switch";
 import NumberInput from "./number-input";
 import { UserSettingsProps } from "@/types";
+import updateNotifySettings from "@/app/(private)/action/update-notify-settings";
+import OneSignal from "react-onesignal";
 
 export default function UserSettings({
   user,
@@ -14,6 +16,27 @@ export default function UserSettings({
   contactNotifyBeforeDays,
   setContactNotifyBeforeDays,
 }: UserSettingsProps) {
+  const handleUpdateNotifySettings = async () => {
+    const newValue = !isnotification;
+    setIsnotification(newValue);
+    const result = await updateNotifySettings({
+      user,
+      notifyEnabled: newValue,
+    });
+    // エラーが発生した場合は状態を元に戻す
+    if (result?.error) {
+      setIsnotification(!newValue);
+      return;
+    }
+    // 👇 DB更新成功後に OneSignal を同期
+    if (newValue) {
+      // 通知ON
+      await OneSignal.Notifications.requestPermission();
+    } else {
+      // 通知OFF
+      await OneSignal.logout();
+    }
+  };
   return (
     <>
       <div className="flex items-center ml-4 gap-2 mb-4">
@@ -28,7 +51,7 @@ export default function UserSettings({
             size="lg"
             id="isnotification"
             checked={isnotification}
-            onCheckedChange={setIsnotification}
+            onCheckedChange={handleUpdateNotifySettings}
             className="border-1 border-gray-300"
           />
         </div>

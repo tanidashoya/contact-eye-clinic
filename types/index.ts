@@ -61,3 +61,8 @@ export interface DateDisplayProps {
   occurredAt?: string;
   next?: string;
 }
+
+export interface UpdateNotifySettingsProps {
+  user: User;
+  notifyEnabled: boolean;
+}
