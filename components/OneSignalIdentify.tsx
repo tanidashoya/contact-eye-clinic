@@ -18,6 +18,12 @@ export default function OneSignalIdentify({ userId }: OneSignalIdentifyProps) {
       });
 
       await OneSignal.login(userId);
+
+      // 通知許可をリクエスト（まだ許可されていない場合）
+      const permission = await OneSignal.Notifications.permission;
+      if (!permission) {
+        await OneSignal.Notifications.requestPermission();
+      }
     };
 
     identifyUser();
