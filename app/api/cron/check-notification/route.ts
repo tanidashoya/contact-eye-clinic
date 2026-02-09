@@ -2,10 +2,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/utils/supabase/admin";
 
-//Supabaseのサービスロールキーを使用して、データベースにアクセス
-const supabase = createServiceRoleClient();
-
 export async function GET(req: NextRequest) {
+  // Supabaseクライアントを関数内で初期化（サーバーレス環境での環境変数読み込みを確実にする）
+  const supabase = createServiceRoleClient();
   // 本番環境ではCRON_SECRETで認証チェック
   const authHeader = req.headers.get("authorization");
   if (
