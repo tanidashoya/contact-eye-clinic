@@ -12,17 +12,24 @@ export default function OneSignalIdentify({ userId }: OneSignalIdentifyProps) {
     if (!userId) return;
 
     const identifyUser = async () => {
-      await OneSignal.init({
-        appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID!,
-        allowLocalhostAsSecureOrigin: true,
-      });
+      try {
+        await OneSignal.init({
+          appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID!,
+          allowLocalhostAsSecureOrigin: true,
+          serviceWorkerParam: { scope: "/" },
+          serviceWorkerPath: "/OneSignalSDKWorker.js",
+        });
 
-      await OneSignal.login(userId);
+        // 通知許可をリクエスト（まだ許可されていない場合）
+        const permission = OneSignal.Notifications.permission;
+        if (!permission) {
+          await OneSignal.Notifications.requestPermission();
+        }
 
-      // 通知許可をリクエスト（まだ許可されていない場合）
-      const permission = await OneSignal.Notifications.permission;
-      if (!permission) {
-        await OneSignal.Notifications.requestPermission();
+        // ユーザーIDを紐づけ
+        await OneSignal.login(userId);
+      } catch (error) {
+        console.error("OneSignal initialization error:", error);
       }
     };
 
