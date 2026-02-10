@@ -2,14 +2,20 @@
 
 import { useEffect } from "react";
 import OneSignal from "react-onesignal";
+import updateNotifySettings from "@/app/(private)/action/update-notify-settings";
+import { User } from "@supabase/supabase-js";
 
 interface OneSignalIdentifyProps {
   userId: string;
+  user: User;
 }
 
 let isOneSignalInitialized = false;
 
-export default function OneSignalIdentify({ userId }: OneSignalIdentifyProps) {
+export default function OneSignalIdentify({
+  userId,
+  user,
+}: OneSignalIdentifyProps) {
   useEffect(() => {
     if (!userId) return;
 
@@ -25,10 +31,31 @@ export default function OneSignalIdentify({ userId }: OneSignalIdentifyProps) {
           });
           isOneSignalInitialized = true;
 
+          // 通知許可の変更を監視（ユーザーがブラウザ設定などで後から変更した場合にも対応）
+          OneSignal.Notifications.addEventListener(
+            "permissionChange",
+            async (permission: boolean) => {
+              if (permission) {
+                await updateNotifySettings({ user, notifyEnabled: true });
+                window.dispatchEvent(
+                  new CustomEvent("onesignal-permission-granted")
+                );
+              }
+            }
+          );
+
           // 通知許可をリクエスト（まだ許可されていない場合）
           const permission = OneSignal.Notifications.permission;
           if (!permission) {
             await OneSignal.Notifications.requestPermission();
+
+            // requestPermission後に許可されたかチェック
+            if (OneSignal.Notifications.permission) {
+              await updateNotifySettings({ user, notifyEnabled: true });
+              window.dispatchEvent(
+                new CustomEvent("onesignal-permission-granted")
+              );
+            }
           }
         }
 
@@ -40,7 +67,7 @@ export default function OneSignalIdentify({ userId }: OneSignalIdentifyProps) {
     };
 
     identifyUser();
-  }, [userId]);
+  }, [userId, user]);
 
   return null;
 }

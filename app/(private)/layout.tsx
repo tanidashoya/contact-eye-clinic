@@ -15,7 +15,7 @@ export default async function PrivateLayout({
   // userが存在する場合はOneSignalIdentifyを表示
   return (
     <>
-      {user && <OneSignalIdentify userId={user.id} />}
+      {user && <OneSignalIdentify userId={user.id} user={user} />}
       <Header />
       {/* ヘッダーの高さを引いたら中央に表示されるようにする */}
       {/* ヘッダーの高さは96px(h-24=24rem) */}

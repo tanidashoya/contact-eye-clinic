@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "./ui/button";
 import { CalendarCog } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SettingSheetClientProps } from "@/types";
 import Image from "next/image";
 import UserSettings from "./user-settings";
@@ -36,6 +36,27 @@ export default function SettingSheetClient({
   const [clinicCycle, setClinicCycle] = useState(clinicSettings.cycle_days);
 
   const [isLoading, setIsLoading] = useState(false);
+
+  // OneSignalの通知許可が変更されたときにスイッチの状態を更新
+  //OneSignalIdentifyで通知許可されたとき、setting-sheet-clientのSwitchをtrueに切り替えるための仕組み
+  useEffect(() => {
+    const handlePermissionGranted = () => {
+      setIsnotification(true);
+    };
+
+    //OneSignalIdentify内でnewCustomEventで"onesignal-permission-granted",このイベントを追加しており、発火したらhandlePermissionGrantedを実行する。
+    window.addEventListener(
+      "onesignal-permission-granted",
+      handlePermissionGranted
+    );
+
+    return () => {
+      window.removeEventListener(
+        "onesignal-permission-granted",
+        handlePermissionGranted
+      );
+    };
+  }, []);
 
   const handleLogout = async () => {
     setIsLoading(true);
