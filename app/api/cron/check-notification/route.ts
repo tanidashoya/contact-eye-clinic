@@ -6,7 +6,14 @@ export async function GET(req: NextRequest) {
   // Supabaseクライアントを関数内で初期化（サーバーレス環境での環境変数読み込みを確実にする）
   const supabase = createServiceRoleClient();
   // 本番環境ではCRON_SECRETで認証チェック
+  //VercelCronは定期実行時に指定したヘッダーを付けてHTTPリクエストを送る
   const authHeader = req.headers.get("authorization");
+  if (!process.env.CRON_SECRET) {
+    return NextResponse.json(
+      { error: "CRON_SECRET is not set" },
+      { status: 500 }
+    );
+  }
   if (
     process.env.NODE_ENV === "production" &&
     authHeader !== `Bearer ${process.env.CRON_SECRET}`
