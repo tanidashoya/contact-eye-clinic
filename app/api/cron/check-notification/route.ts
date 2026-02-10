@@ -3,23 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/utils/supabase/admin";
 
 export async function GET(req: NextRequest) {
+  // Vercel Cron 判定
+  //Vercel Cron が実行する HTTP リクエストに
+  // Vercel が自動で付ける識別ヘッダー：x-vercel-cron:1
+  if (!req.headers.get("x-vercel-cron")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
   // Supabaseクライアントを関数内で初期化（サーバーレス環境での環境変数読み込みを確実にする）
   const supabase = createServiceRoleClient();
   // 本番環境ではCRON_SECRETで認証チェック
   //VercelCronは定期実行時に指定したヘッダーを付けてHTTPリクエストを送る
-  const authHeader = req.headers.get("authorization");
-  if (!process.env.CRON_SECRET) {
-    return NextResponse.json(
-      { error: "CRON_SECRET is not set" },
-      { status: 500 }
-    );
-  }
-  if (
-    process.env.NODE_ENV === "production" &&
-    authHeader !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
 
   // 今日の日付を取得（YYYY-MM-DD形式）
   const today = new Date();
