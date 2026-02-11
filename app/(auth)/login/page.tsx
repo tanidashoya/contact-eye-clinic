@@ -5,18 +5,20 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { login } from "./action";
 import { toast } from "sonner";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import OneSignal from "react-onesignal";
 
 function LoginForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const handleSubmit = async (formData: FormData) => {
     const result = await login(formData);
     if (result?.error) {
       toast.error(result.error);
     }
+    router.replace("/");
   };
 
   // ログインページに遷移した時点でOneSignalのログアウトを実行
