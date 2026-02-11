@@ -28,13 +28,13 @@ export default function UserSettings({
       setIsnotification(!newValue);
       return;
     }
-    // 👇 DB更新成功後に OneSignal を同期
+    // 👇 DB更新成功後に OneSignal のサブスクリプションを同期
     if (newValue) {
-      // 通知ON
-      await OneSignal.Notifications.requestPermission();
+      // 通知ON（サブスクリプションを有効化。未許可ならプロンプトも表示される）
+      await OneSignal.User.PushSubscription.optIn();
     } else {
-      // 通知OFF
-      await OneSignal.logout();
+      // 通知OFF（サブスクリプションを無効化。ユーザー紐づけは維持される）
+      await OneSignal.User.PushSubscription.optOut();
     }
   };
   return (

@@ -63,6 +63,7 @@ export async function GET(req: NextRequest) {
 
     // コンタクト交換イベントの next_due_at が存在する場合
     if (contactEvent?.next_due_at) {
+      //new Date(contactEvent.next_due_at)：next_due_atをDateオブジェクトに変換(UTC時間)
       const notifyDate = new Date(contactEvent.next_due_at);
       //次回交換予定日(next_due_at)から、設定された“何日前”(contact_notify_before_days)を引いて、通知日（notifyDate）を計算している
       notifyDate.setDate(
@@ -136,6 +137,18 @@ export async function GET(req: NextRequest) {
     });
 
     if (response.ok) notifiedCount++;
+    if (!response.ok) {
+      console.error(
+        `通知送信に失敗しました：ユーザーID: ${notification.userId}: ${response.statusText}`
+      );
+      return NextResponse.json(
+        {
+          error: `通知送信に失敗しました：ユーザーID: ${notification.userId}: ${response.statusText}`,
+          success: false,
+        },
+        { status: response.status }
+      );
+    }
   }
 
   return NextResponse.json({

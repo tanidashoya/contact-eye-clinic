@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { useEffect, Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import OneSignal from "react-onesignal";
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -17,6 +18,14 @@ function LoginForm() {
       toast.error(result.error);
     }
   };
+
+  // ログインページに遷移した時点でOneSignalのログアウトを実行
+  // Cookieが切れてリダイレクトされた場合にOneSignalのログイン状態が残るのを防ぐ
+  useEffect(() => {
+    OneSignal.logout().catch(() => {
+      // 未初期化の場合はエラーになるが無視してOK
+    });
+  }, []);
 
   useEffect(() => {
     const error = searchParams.get("error");
