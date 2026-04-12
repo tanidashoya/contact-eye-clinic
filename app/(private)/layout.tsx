@@ -1,6 +1,7 @@
 import Header from "@/components/header";
 import OneSignalIdentify from "@/components/OneSignalIdentify";
 import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function PrivateLayout({
   children,
@@ -12,10 +13,13 @@ export default async function PrivateLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // userが存在する場合はOneSignalIdentifyを表示
+  //ユーザーが存在しない場合はログイン画面にリダイレクト
+  if (!user) {
+    redirect("/login?error=user_not_found");
+  }
   return (
     <>
-      {user && <OneSignalIdentify userId={user.id} user={user} />}
+      <OneSignalIdentify userId={user.id} user={user} />
       <Header />
       {/* ヘッダーの高さを引いたら中央に表示されるようにする */}
       {/* ヘッダーの高さは80px(h-20=20rem) */}

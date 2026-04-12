@@ -5,6 +5,9 @@ import { redirect } from "next/navigation";
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
+  //safeParseはzodのメソッドで、formDataをスキーマに適用して、エラーがあればエラーを返す
+  //.safeParse() を使っているため、result.success で分岐しています。失敗時は result.error（ZodError オブジェクト）にアクセス
+  //parse()の場合はtry-catchを使う
   const result = loginFormSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -30,5 +33,6 @@ export async function login(formData: FormData) {
     };
   }
 
+  //ログイン成功したらホームにリダイレクト
   redirect("/");
 }

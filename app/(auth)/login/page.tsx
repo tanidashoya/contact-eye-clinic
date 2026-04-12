@@ -26,12 +26,14 @@ function LoginForm() {
     }
   };
 
+  //supabaseのセッションが切れってログアウトしたときにsignoutのactionに定義しているだけでは作動しないので、loginページが表示された際にはsignoutするようにしておく
   useEffect(() => {
     OneSignal.logout().catch(() => {
       // ログアウト状態で失敗しても、画面表示の継続を優先する。
     });
   }, []);
 
+  //"/"に入ったときにもう一度ユーザー認証をしてエラーが発生したときなどにクエリパラメータが入ってloginページにリダイレクトしてくるので、それを見てエラーを表示する
   useEffect(() => {
     const error = searchParams.get("error");
     switch (error) {
@@ -69,7 +71,10 @@ function LoginForm() {
         </p>
       </div>
 
-      <form className="flex w-full max-w-xs flex-col gap-4" onSubmit={handleSubmit}>
+      <form
+        className="flex w-full max-w-xs flex-col gap-4"
+        onSubmit={handleSubmit}
+      >
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium">
             メールアドレス
@@ -103,7 +108,11 @@ function LoginForm() {
           className="mt-2 w-full rounded-xl"
           disabled={isLoading}
         >
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "ログイン"}
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            "ログイン"
+          )}
         </Button>
       </form>
 

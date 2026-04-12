@@ -1,0 +1,4 @@
+interface:
+  display_name: "Next.js Supabase 認証クライアント分離"
+  short_description: "Next.js 向け Supabase 認証基盤の分離と標準化。"
+  default_prompt: "Use $nextjs-supabase-auth-clients to Next.js App Router の Supabase 認証クライアント分離を設計またはレビューする。"

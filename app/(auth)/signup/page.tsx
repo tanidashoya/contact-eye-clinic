@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    //その要素の 既定の動作 をさせないようにする
     e.preventDefault();
     setIsLoading(true);
     const formData = new FormData(e.currentTarget);
@@ -33,7 +34,10 @@ export default function SignupPage() {
         <p className="text-sm text-muted-foreground">アカウント新規登録</p>
       </div>
 
-      <form className="flex w-full max-w-xs flex-col gap-4" onSubmit={handleSubmit}>
+      <form
+        className="flex w-full max-w-xs flex-col gap-4"
+        onSubmit={handleSubmit}
+      >
         <div className="space-y-1">
           <label htmlFor="name" className="text-sm font-medium">
             お名前
@@ -81,7 +85,11 @@ export default function SignupPage() {
           className="mt-2 w-full rounded-xl"
           disabled={isLoading}
         >
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "新規登録"}
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            "新規登録"
+          )}
         </Button>
       </form>
 
