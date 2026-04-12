@@ -1,40 +1,41 @@
-//ユーザーからリクエストがあったときにますmiddlewareを実行する。
+// ユーザーからリクエストがあったときにまず proxy を実行する。
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
-//updateSession関数を実行する。
-//updateSession関数は、Cookieに保存されている情報を取り出して、supabase用のclientを作る
-//Cookieが有効化を確認
+// updateSession 関数を実行する。
+// updateSession 関数は、Cookie に保存されている情報を取り出して、supabase 用の client を作る
+// Cookie が有効かを確認
 /*
 つまり・・・
 ユーザーのブラウザに
 そのアプリ用の Supabase 認証情報（Cookie）が保存されているか確認し、
 有効ならそのまま「ログイン済み」として扱えるようにする仕組み。
 */
-//requestの中身：URL、HTTPメソッド（GET、POSTなど）、Cookie、ヘッダー、ボディなど
-export async function middleware(request: NextRequest) {
+// request の中身：URL、HTTP メソッド（GET、POST など）、Cookie、ヘッダー、ボディなど
+//macherのパターンに入っているものはupdateSessionを実行
+export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }
 
-//この middleware を、どのリクエストに対して実行するかを指定する設定
+// この proxy を、どのリクエストに対して実行するかを指定する設定
 /*
 matcher とは何か
-URLパスに対するマッチ条件
+URL パスに対するマッチ条件
 正規表現っぽい書き方
-マッチしたリクエストだけ middleware 実行
+マッチしたリクエストだけ proxy 実行
 */
-//matcherの条件を分解
-//"/" から始まる全パス
-//ただし「次に該当するものは除外」⇒supabaseの認証を通さない
+// matcher の条件を分解
+// "/" から始まる全パス
+// ただし「次に該当するものは除外」⇒ supabase の認証を通さない
 /*
 api/cron
 _next/static
 _next/image
 favicon.ico
 画像ファイル（svg, png, jpg, jpeg, gif, webp）
-👉 これら以外は全部 middleware を通す
+👉 これら以外は全部 proxy を通す
 */
-//api/cronは認証不要(cron jobはvercelで実行されるため、middlewareを通さない)⇒しかし、別の認証キーを必ず入れるべき
+// api/cron は認証不要（cron job は Vercel で実行されるため、proxy を通さない）⇒ しかし、別の認証キーを必ず入れるべき
 export const config = {
   matcher: [
     /*
@@ -54,7 +55,7 @@ export const config = {
 1️⃣ ブラウザがリクエストを送る
 （Cookie は自動で一緒に送られる）
 
-2️⃣ middleware が Cookie を読む
+2️⃣ proxy が Cookie を読む
 
 3️⃣ Supabase Client が
 「このトークンまだ使える？」

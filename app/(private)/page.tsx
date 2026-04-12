@@ -25,15 +25,21 @@ export default async function Home() {
     redirect("/login?error=get_new_event_error");
   }
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-16">
-      <Section title="コンタクト交換">
+    <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-2 lg:gap-8">
+      <Section
+        title="コンタクト交換"
+        description="前回の交換日と次回の目安を、落ち着いた見た目で確認できます。"
+      >
         <DateDisplay
           eventType="contact"
           occurredAt={contactEvent?.occurred_at}
           next={contactEvent?.next_due_at}
         />
       </Section>
-      <Section title="眼科受診">
+      <Section
+        title="眼科受診"
+        description="受診の間隔を無理なく管理して、次の予定を見失わないためのカードです。"
+      >
         <DateDisplay
           eventType="clinic"
           occurredAt={clinicEvent?.occurred_at}
