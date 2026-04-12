@@ -84,15 +84,19 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/auth") &&
     !request.nextUrl.pathname.startsWith("/signup")
   ) {
-    // no user, potentially respond by redirecting the user to the login page
-    //request.nextUrl.clone() ⇒ request.nextUrlは読み取り専用。
-    //requet.nexttUrl:ユーザーが今アクセスしようとしている URL をNext.js 用に扱いやすくしたオブジェクト
-    //redirect は URL 全体を見て遷移する。その URL の中で、今回は pathname だけを変えている（path）
-    /*
-    pathname を変えると「どのページに行くか」が決まり、クエリ（?xxx=yyy）が付いていてもそれは“付加情報”として一緒に遷移するだけ。
-    */
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
+  //ログイン済みなら /login, /signup にアクセスさせない（ホームにリダイレクト）
+  if (
+    user &&
+    (request.nextUrl.pathname.startsWith("/login") ||
+      request.nextUrl.pathname.startsWith("/signup"))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
     return NextResponse.redirect(url);
   }
 

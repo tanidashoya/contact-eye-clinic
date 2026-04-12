@@ -2,30 +2,33 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { login } from "./action";
-import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import OneSignal from "react-onesignal";
+import { toast } from "sonner";
+import { login } from "./action";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const handleSubmit = async (formData: FormData) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const formData = new FormData(e.currentTarget);
     const result = await login(formData);
     if (result?.error) {
       toast.error(result.error);
+      setIsLoading(false);
     }
-    router.replace("/");
   };
 
-  // ログインページに遷移した時点でOneSignalのログアウトを実行
-  // Cookieが切れてリダイレクトされた場合にOneSignalのログイン状態が残るのを防ぐ
   useEffect(() => {
     OneSignal.logout().catch(() => {
-      // 未初期化の場合はエラーになるが無視してOK
+      // ログアウト状態で失敗しても、画面表示の継続を優先する。
     });
   }, []);
 
@@ -36,30 +39,37 @@ function LoginForm() {
         toast.error("ユーザーが見つかりません。再度ログインしてください。");
         break;
       case "user_settings_not_found":
-        toast.error(
-          "ユーザー通知設定が見つかりません。再度ログインしてください。"
-        );
+        toast.error("ユーザー設定が見つかりません。再度ログインしてください。");
         break;
       case "contact_settings_not_found":
         toast.error(
-          "コンタクト交換イベント設定が見つかりません。再度ログインしてください。"
+          "コンタクト交換イベント設定が見つかりません。再度ログインしてください。",
         );
         break;
       case "clinic_settings_not_found":
         toast.error(
-          "眼科受診イベント設定が見つかりません。再度ログインしてください。"
+          "眼科受診イベント設定が見つかりません。再度ログインしてください。",
         );
         break;
       case "get_new_event_error":
-        toast.error("イベントの取得に失敗しました。再度ログインしてください。");
+        toast.error("イベント取得に失敗しました。再度ログインしてください。");
         break;
     }
   }, [searchParams]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-8">
-      <form className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold text-center">ログイン</h1>
+    <div className="flex h-full flex-col items-center justify-center px-4">
+      <div className="mb-8 flex flex-col items-center gap-1">
+        <Image src="/logo2.png" alt="Eye Check" width={56} height={56} />
+        <span className="text-xl font-semibold tracking-tight text-foreground">
+          Eye Check
+        </span>
+        <p className="text-sm text-muted-foreground">
+          コンタクトと眼科のかんたん管理
+        </p>
+      </div>
+
+      <form className="flex w-full max-w-xs flex-col gap-4" onSubmit={handleSubmit}>
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium">
             メールアドレス
@@ -68,7 +78,9 @@ function LoginForm() {
             id="email"
             type="email"
             name="email"
-            placeholder="メールアドレス"
+            placeholder="you@example.com"
+            required
+            autoComplete="email"
           />
         </div>
         <div className="space-y-1">
@@ -80,20 +92,26 @@ function LoginForm() {
             type="password"
             name="password"
             placeholder="パスワード"
+            required
+            minLength={6}
+            autoComplete="current-password"
           />
         </div>
         <Button
           type="submit"
-          variant="default"
           size="lg"
-          className="bg-primary hover:bg-primary/80 text-white"
-          formAction={handleSubmit}
+          className="mt-2 w-full rounded-xl"
+          disabled={isLoading}
         >
-          ログイン
+          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "ログイン"}
         </Button>
       </form>
-      <Link href="/signup" className="text-blue-500 hover:text-blue-600">
-        新規登録はこちら
+
+      <Link
+        href="/signup"
+        className="mt-6 text-sm text-blue-500 underline-offset-4 hover:text-foreground hover:underline"
+      >
+        アカウントをお持ちでない方はこちら
       </Link>
     </div>
   );
@@ -103,8 +121,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center h-screen">
-          <Loader2 className="w-10 h-10 animate-spin" />
+        <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-10 w-10 animate-spin" />
         </div>
       }
     >

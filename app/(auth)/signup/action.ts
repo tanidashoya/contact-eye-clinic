@@ -1,12 +1,24 @@
 "use server";
+import { signupFormSchema } from "@/lib/validations/auth";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 export async function signup(formData: FormData) {
   const supabase = await createClient();
-  const name = formData.get("name") as string; //バリデーションを作成したときにas stringを外す
-  const email = formData.get("email") as string; //バリデーションを作成したときにas stringを外す
-  const password = formData.get("password") as string; //バリデーションを作成したときにas stringを外す
+  const result = signupFormSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!result.success) {
+    return {
+      error: result.error.issues[0]?.message ?? "入力内容を確認してください",
+    };
+  }
+
+  const { name, email, password } = result.data;
+
   const { error: signUpError } = await supabase.auth.signUp({
     email,
     password,

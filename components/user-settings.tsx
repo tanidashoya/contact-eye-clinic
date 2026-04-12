@@ -5,6 +5,7 @@ import { Switch } from "./ui/switch";
 import NumberInput from "./number-input";
 import { UserSettingsProps } from "@/types";
 import updateNotifySettings from "@/app/(private)/action/update-notify-settings";
+import updateNotifyBeforeDays from "@/app/(private)/action/update-notify-before-days";
 import OneSignal from "react-onesignal";
 
 export default function UserSettings({
@@ -37,6 +38,24 @@ export default function UserSettings({
       await OneSignal.User.PushSubscription.optOut();
     }
   };
+  const handleContactNotifyBeforeDaysChange = (value: number) => {
+    setContactNotifyBeforeDays(value);
+    updateNotifyBeforeDays({
+      user,
+      contactNotifyBeforeDays: value,
+      clinicNotifyBeforeDays,
+    });
+  };
+
+  const handleClinicNotifyBeforeDaysChange = (value: number) => {
+    setClinicNotifyBeforeDays(value);
+    updateNotifyBeforeDays({
+      user,
+      contactNotifyBeforeDays,
+      clinicNotifyBeforeDays: value,
+    });
+  };
+
   return (
     <>
       <div className="flex items-center ml-4 gap-2 mb-4">
@@ -46,7 +65,6 @@ export default function UserSettings({
       <div className="px-2 flex flex-col gap-4 mx-4 mb-2">
         <div className="flex items-center gap-6">
           <label htmlFor="isnotification">通知を受け取る</label>
-          {/* switchで状態を変換しているがDBの値は変わっていないので同期するようにしなければならない */}
           <Switch
             size="lg"
             id="isnotification"
@@ -63,7 +81,7 @@ export default function UserSettings({
             id="contactNotifyBeforeDays"
             numberValue={contactNotifyBeforeDays}
             disabled={!isnotification}
-            onValueChange={setContactNotifyBeforeDays}
+            onValueChange={handleContactNotifyBeforeDaysChange}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -72,7 +90,7 @@ export default function UserSettings({
             id="clinicNotifyBeforeDays"
             numberValue={clinicNotifyBeforeDays}
             disabled={!isnotification}
-            onValueChange={setClinicNotifyBeforeDays}
+            onValueChange={handleClinicNotifyBeforeDaysChange}
           />
         </div>
       </div>

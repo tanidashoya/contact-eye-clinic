@@ -66,3 +66,9 @@ export interface UpdateNotifySettingsProps {
   user: User;
   notifyEnabled: boolean;
 }
+
+export interface UpdateNotifyBeforeDaysProps {
+  user: User;
+  contactNotifyBeforeDays: number;
+  clinicNotifyBeforeDays: number;
+}
