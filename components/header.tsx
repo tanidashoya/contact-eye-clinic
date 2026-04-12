@@ -7,7 +7,7 @@ export default function Header() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between pl-4 pr-6">
         <div className="flex items-center gap-2.5">
           <Image src="/logo2.png" alt="Eye Check" width={60} height={60} />
-          <span className="text-lg font-semibold tracking-tight text-foreground">
+          <span className="text-lg font-semibold text-gray-500 tracking-tight text-foreground">
             Eye Check
           </span>
         </div>

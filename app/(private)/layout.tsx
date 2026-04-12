@@ -1,4 +1,5 @@
 import Header from "@/components/header";
+import IosInstallPrompt from "@/components/ios-install-prompt";
 import OneSignalIdentify from "@/components/OneSignalIdentify";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
@@ -19,6 +20,7 @@ export default async function PrivateLayout({
   }
   return (
     <>
+      <IosInstallPrompt />
       <OneSignalIdentify userId={user.id} user={user} />
       <Header />
       {/* ヘッダーの高さを引いたら中央に表示されるようにする */}

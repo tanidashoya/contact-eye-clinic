@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { Input } from "./ui/input";
 
-interface NumberInputProps
-  extends Omit<React.ComponentProps<"input">, "value" | "onChange" | "type"> {
+interface NumberInputProps extends Omit<
+  React.ComponentProps<"input">,
+  "value" | "onChange" | "type"
+> {
   numberValue: number;
   onValueChange: (value: number) => void;
 }
@@ -14,6 +16,7 @@ export default function NumberInput({
   onValueChange,
   ...props
 }: NumberInputProps) {
+  //表示・入力中はlocalValueを文字列にしておく
   const [localValue, setLocalValue] = useState(String(numberValue));
 
   // 外部のnumberValueが変わったらローカルも同期
@@ -27,6 +30,7 @@ export default function NumberInput({
   };
 
   // フォーカスが外れたら値を更新
+  //フォーカスが外れたらlocalValueをNumber型に変換してonValueChange(DBを更新と外部のnumbervalueを更新してuseEffectで通知前日数を再び文字列化)を呼び出す
   const handleBlur = () => {
     const trimmed = localValue.trim();
     if (trimmed === "" || isNaN(Number(trimmed))) {

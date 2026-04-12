@@ -20,6 +20,15 @@ export default function OneSignalIdentify({
     //ユーザーが存在しない場合はOneSignalの初期化をしない
     if (!userId || !user) return;
 
+    // iOS かつ standalone モードでない場合はスキップ（ホーム画面に追加されていないとPush通知が使えない）
+    const isIos =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+    const isStandalone =
+      ("standalone" in navigator && (navigator as { standalone?: boolean }).standalone === true) ||
+      window.matchMedia("(display-mode: standalone)").matches;
+    if (isIos && !isStandalone) return;
+
     // 初回のみ init() を実行（１ブラウザ一回が原則）
     //onesignalの初期化()⇒init は“通知機能の電源ON”
     //appId:*「どの OneSignal アプリの通知か」**を識別するID

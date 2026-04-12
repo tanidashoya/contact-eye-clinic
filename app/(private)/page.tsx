@@ -27,6 +27,7 @@ export default async function Home() {
   return (
     <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-2 lg:gap-8">
       <Section
+        subtitle="Contact Lens"
         title="コンタクト交換"
         description="次回のコンタクト交換日を確認できます。"
       >
@@ -36,7 +37,11 @@ export default async function Home() {
           next={contactEvent?.next_due_at}
         />
       </Section>
-      <Section title="眼科受診" description="次回の眼科受診日を確認できます。">
+      <Section
+        subtitle="Eye Clinic"
+        title="眼科受診"
+        description="次回の眼科受診日を確認できます。"
+      >
         <DateDisplay
           eventType="clinic"
           occurredAt={clinicEvent?.occurred_at}
