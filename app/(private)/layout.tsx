@@ -18,8 +18,8 @@ export default async function PrivateLayout({
       {user && <OneSignalIdentify userId={user.id} user={user} />}
       <Header />
       {/* ヘッダーの高さを引いたら中央に表示されるようにする */}
-      {/* ヘッダーの高さは96px(h-24=24rem) */}
-      <main className="max-w-7xl mx-auto px-4 mt-20 flex flex-col justify-center items-center h-[calc(100vh-80px)] w-full">
+      {/* ヘッダーの高さは80px(h-20=20rem) */}
+      <main className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-7xl flex-col items-center justify-center px-4 py-10">
         {children}
       </main>
     </>

@@ -19,7 +19,7 @@ const EVENT_CONFIG = {
       "border-emerald-100 bg-linear-to-br from-emerald-50 via-white to-teal-50",
     badgeClass: "bg-emerald-100 text-emerald-700",
     buttonClass:
-      "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-200",
+      "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 focus-visible:ring-emerald-200",
   },
   clinic: {
     icon: Eye,
@@ -31,9 +31,13 @@ const EVENT_CONFIG = {
       "border-sky-100 bg-linear-to-br from-sky-50 via-white to-cyan-50",
     badgeClass: "bg-sky-100 text-sky-700",
     buttonClass:
-      "bg-sky-600 text-white hover:bg-sky-700 focus-visible:ring-sky-200",
+      "border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 focus-visible:ring-sky-200",
   },
 } as const;
+
+function getTodayJST(): string {
+  return new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+}
 
 function formatDate(value?: string, emptyText = "未登録") {
   if (!value) return emptyText;
@@ -85,10 +89,15 @@ export default function DateDisplay({
               {config.badge}
             </span>
             <div className="space-y-2">
-              <p className="text-sm font-medium text-stone-500">次回予定</p>
+              <p className="text-sm font-medium text-stone-500">次回予定日</p>
               <p className="text-3xl font-semibold tracking-tight text-stone-800 md:text-4xl">
                 {formatDate(next, config.emptyText)}
               </p>
+              {next && next < getTodayJST() && (
+                <span className="inline-block text-xs text-red-600 bg-red-50 rounded-full px-2 py-0.5">
+                  予定日を過ぎています
+                </span>
+              )}
             </div>
           </div>
           <div className="rounded-2xl bg-white/80 p-3 text-stone-600 shadow-sm">
@@ -100,43 +109,34 @@ export default function DateDisplay({
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50/80 p-4">
           <div className="mb-3 flex items-center gap-2 text-sm font-medium text-stone-500">
-            <CalendarCheck2 className="size-4" />
-            <span>次回予定日</span>
-          </div>
-          <p className="text-lg font-semibold text-stone-800">
-            {formatDate(next, config.emptyText)}
-          </p>
-        </div>
-
-        <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50/80 p-4">
-          <div className="mb-3 flex items-center gap-2 text-sm font-medium text-stone-500">
             <History className="size-4" />
             <span>前回記録日</span>
           </div>
-          <p className="text-lg font-semibold text-stone-800">
+          <p className="text-md text-gray-500 font-semibold">
             {formatDate(occurredAt, config.emptyText)}
           </p>
         </div>
       </div>
 
-      <div className="mt-auto flex flex-col gap-4 rounded-[1.5rem] border border-dashed border-stone-200 bg-stone-50/70 p-4 md:flex-row md:items-center md:justify-between">
-        <p className="text-sm leading-6 text-stone-500">{config.helperText}</p>
-        <Button
-          onClick={handleRecord}
-          disabled={isLoading}
-          size="lg"
-          className={`min-w-[12rem] rounded-full px-5 shadow-sm ${config.buttonClass}`}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              保存中...
-            </>
-          ) : (
-            config.buttonLabel
-          )}
-        </Button>
-      </div>
+      <Button
+        onClick={handleRecord}
+        disabled={isLoading}
+        variant="outline"
+        size="lg"
+        className={`w-full rounded-2xl my-2 border px-5 py-6 text-sm font-medium transition-colors ${config.buttonClass}`}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            保存中...
+          </>
+        ) : (
+          <>
+            <CalendarCheck2 className="size-4" />
+            {config.buttonLabel}
+          </>
+        )}
+      </Button>
     </div>
   );
 }

@@ -24,13 +24,13 @@ export default function SettingSheetClient({
   clinicSettings,
 }: SettingSheetClientProps) {
   const [isnotification, setIsnotification] = useState(
-    userSettings.notify_enabled
+    userSettings.notify_enabled,
   );
   const [clinicNotifyBeforeDays, setClinicNotifyBeforeDays] = useState(
-    userSettings.clinic_notify_before_days
+    userSettings.clinic_notify_before_days,
   );
   const [contactNotifyBeforeDays, setContactNotifyBeforeDays] = useState(
-    userSettings.contact_notify_before_days
+    userSettings.contact_notify_before_days,
   );
   const [contactCycle, setContactCycle] = useState(contactSettings.cycle_days);
   const [clinicCycle, setClinicCycle] = useState(clinicSettings.cycle_days);
@@ -47,13 +47,13 @@ export default function SettingSheetClient({
     //OneSignalIdentify内でnewCustomEventで"onesignal-permission-granted",このイベントを追加しており、発火したらhandlePermissionGrantedを実行する。
     window.addEventListener(
       "onesignal-permission-granted",
-      handlePermissionGranted
+      handlePermissionGranted,
     );
 
     return () => {
       window.removeEventListener(
         "onesignal-permission-granted",
-        handlePermissionGranted
+        handlePermissionGranted,
       );
     };
   }, []);
@@ -72,12 +72,15 @@ export default function SettingSheetClient({
 
   return (
     <Sheet>
-      <SheetTrigger>
-        <Button variant="ghost" size="icon" asChild>
-          <CalendarCog size={30} color="gray" />
-        </Button>
+      <SheetTrigger asChild>
+        <button className="flex flex-col items-center gap-1.5 rounded-md px-2 py-1 transition-colors hover:bg-accent">
+          <CalendarCog size={32} className="text-muted-foreground/60" />
+          <span className="text-[10px] leading-none text-muted-foreground/60">
+            設定
+          </span>
+        </button>
       </SheetTrigger>
-      <SheetContent className="w-[80%]" side="left">
+      <SheetContent className="w-[80%]" side="right">
         <SheetTitle className="h-22 text-xl font-bold flex items-center gap-2 pl-2 border-b border-gray-200 bg-gray-20">
           <Image src="/logo2.png" alt="logo" width={60} height={60} />
           <span className="text-xl font-bold text-gray-500">Eye Check</span>

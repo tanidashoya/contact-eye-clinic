@@ -18,9 +18,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // 今日の日付を取得（YYYY-MM-DD形式）
-  const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
+  // 今日の日付をJST基準で取得（YYYY-MM-DD形式）
+  // Vercel CronはUTCで実行されるため、明示的にJSTに変換する
+  const now = new Date();
+  const jstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const todayStr = jstDate.toISOString().split("T")[0];
 
   // 通知が有効なユーザーの設定を取得
   const { data: userSettings, error: settingsError } = await supabase
@@ -108,7 +110,9 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // 通知を送信
+  // 通知を送信（1件の失敗で全停止しないよう、エラーを記録して続行）
+  const errors: string[] = [];
+
   for (const notification of notifications) {
     const isContact = notification.eventType === "contact";
     const title = isContact
@@ -118,43 +122,45 @@ export async function GET(req: NextRequest) {
       ? `コンタクト交換予定日の${notification.beforeDays}日前です！`
       : `眼科受診予定日の${notification.beforeDays}日前です！`;
 
-    const response = await fetch("https://api.onesignal.com/notifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: `Key ${process.env.ONESIGNAL_REST_API_KEY}`,
-      },
-      body: JSON.stringify({
-        app_id: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID,
-        target_channel: "push",
-        include_aliases: {
-          external_id: [notification.userId],
+    try {
+      const response = await fetch("https://api.onesignal.com/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Key ${process.env.ONESIGNAL_REST_API_KEY}`,
         },
-        headings: { ja: title, en: title },
-        contents: { ja: message, en: message },
-        url: "/",
-      }),
-    });
+        body: JSON.stringify({
+          app_id: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID,
+          target_channel: "push",
+          include_aliases: {
+            external_id: [notification.userId],
+          },
+          headings: { ja: title, en: title },
+          contents: { ja: message, en: message },
+          url: "/",
+        }),
+      });
 
-    if (response.ok) notifiedCount++;
-    if (!response.ok) {
-      console.error(
-        `通知送信に失敗しました：ユーザーID: ${notification.userId}: ${response.statusText}`
-      );
-      return NextResponse.json(
-        {
-          error: `通知送信に失敗しました：ユーザーID: ${notification.userId}: ${response.statusText}`,
-          success: false,
-        },
-        { status: response.status }
-      );
+      if (response.ok) {
+        notifiedCount++;
+      } else {
+        const errorMsg = `ユーザーID: ${notification.userId}: ${response.statusText}`;
+        console.error(`通知送信失敗: ${errorMsg}`);
+        errors.push(errorMsg);
+      }
+    } catch (error) {
+      const errorMsg = `ユーザーID: ${notification.userId}: ${error instanceof Error ? error.message : "不明なエラー"}`;
+      console.error(`通知送信エラー: ${errorMsg}`);
+      errors.push(errorMsg);
     }
   }
 
   return NextResponse.json({
-    success: true,
+    success: errors.length === 0,
     checked_date: todayStr,
     targets: notifications.length,
     notified: notifiedCount,
+    failed: errors.length,
+    errors,
   });
 }
