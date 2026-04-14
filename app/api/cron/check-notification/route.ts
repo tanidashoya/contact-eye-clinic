@@ -1,6 +1,7 @@
 // 毎日定時に実行され、通知対象ユーザーを取得してプッシュ通知を送信するCron用API
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/utils/supabase/admin";
+import { addDaysToDateString, getTodayJstDateString } from "@/lib/date";
 
 export async function GET(req: NextRequest) {
   // Supabaseクライアントを関数内で初期化（サーバーレス環境での環境変数読み込みを確実にする）
@@ -20,9 +21,7 @@ export async function GET(req: NextRequest) {
 
   // 今日の日付をJST基準で取得（YYYY-MM-DD形式）
   // Vercel CronはUTCで実行されるため、明示的にJSTに変換する
-  const now = new Date();
-  const jstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  const todayStr = jstDate.toISOString().split("T")[0];
+  const todayStr = getTodayJstDateString();
 
   // 通知が有効なユーザーの設定を取得
   const { data: userSettings, error: settingsError } = await supabase
@@ -66,12 +65,10 @@ export async function GET(req: NextRequest) {
     // コンタクト交換イベントの next_due_at が存在する場合
     if (contactEvent?.next_due_at) {
       //new Date(contactEvent.next_due_at)：next_due_atをDateオブジェクトに変換(UTC時間)
-      const notifyDate = new Date(contactEvent.next_due_at);
-      //次回交換予定日(next_due_at)から、設定された“何日前”(contact_notify_before_days)を引いて、通知日（notifyDate）を計算している
-      notifyDate.setDate(
-        notifyDate.getDate() - settings.contact_notify_before_days
+      const notifyDateStr = addDaysToDateString(
+        contactEvent.next_due_at,
+        -settings.contact_notify_before_days
       );
-      const notifyDateStr = notifyDate.toISOString().split("T")[0];
 
       // 通知日（notifyDateStr）が今日の日付（todayStr）と一致する場合、通知対象として配列に追加
       if (notifyDateStr === todayStr) {
@@ -94,11 +91,10 @@ export async function GET(req: NextRequest) {
       .maybeSingle();
 
     if (clinicEvent?.next_due_at) {
-      const notifyDate = new Date(clinicEvent.next_due_at);
-      notifyDate.setDate(
-        notifyDate.getDate() - settings.clinic_notify_before_days
+      const notifyDateStr = addDaysToDateString(
+        clinicEvent.next_due_at,
+        -settings.clinic_notify_before_days
       );
-      const notifyDateStr = notifyDate.toISOString().split("T")[0];
 
       if (notifyDateStr === todayStr) {
         notifications.push({

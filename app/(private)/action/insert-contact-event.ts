@@ -1,6 +1,7 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { addDaysToDateString, getTodayJstDateString } from "@/lib/date";
 
 export default async function insertContactEvents() {
   const supabase = await createClient();
@@ -29,20 +30,24 @@ export default async function insertContactEvents() {
   const contactEventCycle = contactEventSettings.cycle_days;
 
   //コンタクト交換イベントを挿入
+  const occurredAt = getTodayJstDateString();
+  const nextDueAt = addDaysToDateString(occurredAt, contactEventCycle ?? 14);
+
   const { error: contactEventError } = await supabase.from("events").insert({
     user_id: user?.id ?? "",
     event_type: "contact",
-    occurred_at: new Date().toISOString().slice(0, 10),
+    occurred_at: occurredAt,
     cycle_days: contactEventCycle ?? 14,
-    next_due_at: new Date(
-      new Date().setDate(new Date().getDate() + contactEventCycle),
-    )
-      .toISOString()
-      .slice(0, 10),
+    next_due_at: nextDueAt,
   });
   if (contactEventError) {
     console.error(contactEventError);
     return { error: "コンタクト交換イベントの挿入に失敗しました" };
   }
+  /*
+  revalidatePath("/") は、Next.js の revalidatePath 関数を使って、指定したパスのキャッシュを無効化して、最新のデータを表示するための関数です。
+  この関数を使うことで、ユーザーがページをリロードしたときに、最新のデータが表示されるようになります。
+  */
   revalidatePath("/");
+  return { error: null };
 }

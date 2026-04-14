@@ -6,6 +6,7 @@ function normalizeTrimmedString(value: unknown) {
   return value;
 }
 
+//preprocess:第一引数に関数を渡すと、その関数の戻り値を第二引数のスキーマに適用する
 const emailFieldSchema = z.preprocess((value) => {
   if (value == null) return "";
   if (typeof value === "string") return value.trim().toLowerCase();

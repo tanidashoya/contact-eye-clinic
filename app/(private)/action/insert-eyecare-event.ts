@@ -1,6 +1,7 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { addDaysToDateString, getTodayJstDateString } from "@/lib/date";
 
 export default async function insertEyecareEvent() {
   const supabase = await createClient();
@@ -29,20 +30,20 @@ export default async function insertEyecareEvent() {
   const eyeCareEventCycle = eyeCareEventSettings.cycle_days;
 
   //眼科受診イベントを挿入
+  const occurredAt = getTodayJstDateString();
+  const nextDueAt = addDaysToDateString(occurredAt, eyeCareEventCycle ?? 180);
+
   const { error: eyeCareEventError } = await supabase.from("events").insert({
     user_id: user?.id ?? "",
     event_type: "clinic",
-    occurred_at: new Date().toISOString().slice(0, 10),
+    occurred_at: occurredAt,
     cycle_days: eyeCareEventCycle ?? 180,
-    next_due_at: new Date(
-      new Date().setDate(new Date().getDate() + eyeCareEventCycle),
-    )
-      .toISOString()
-      .slice(0, 10),
+    next_due_at: nextDueAt,
   });
   if (eyeCareEventError) {
     console.error(eyeCareEventError);
     return { error: "眼科受診イベントの挿入に失敗しました" };
   }
   revalidatePath("/");
+  return { error: null };
 }

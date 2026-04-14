@@ -6,7 +6,9 @@ import { DateDisplayProps } from "@/types";
 import { Button } from "./ui/button";
 import { CalendarCheck2, Eye, History, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useTransition } from "react";
+import { getTodayJstDateString } from "@/lib/date";
+import { useRouter } from "next/navigation";
 
 const EVENT_CONFIG = {
   contact: {
@@ -36,7 +38,7 @@ const EVENT_CONFIG = {
 } as const;
 
 function getTodayJST(): string {
-  return new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+  return getTodayJstDateString();
 }
 
 function formatDate(value?: string, emptyText = "未登録") {
@@ -53,25 +55,28 @@ export default function DateDisplay({
   occurredAt,
   next,
 }: DateDisplayProps) {
+  //クライアントからルーティング（ページ遷移や更新）を操作するためのフック
+  const router = useRouter();
   const normalizedEventType = eventType === "clinic" ? "clinic" : "contact";
   const config = EVENT_CONFIG[normalizedEventType];
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const handleRecord = async () => {
-    setIsLoading(true);
+    startTransition(async () => {
+      const action =
+        normalizedEventType === "contact"
+          ? insertContactEvent
+          : insertEyecareEvent;
+      const result = await action();
 
-    const action =
-      normalizedEventType === "contact"
-        ? insertContactEvent
-        : insertEyecareEvent;
-    const result = await action();
-
-    if (result?.error) {
-      console.error(result.error);
-      toast.error(result.error);
-    }
-
-    setIsLoading(false);
+      if (result?.error) {
+        console.error(result.error);
+        toast.error(result.error);
+        return;
+      }
+      //router.refresh()は今の URL のサーバーコンポーネントを取り直して、今のツリーに反映して」 とクライアントから明示的に頼む API
+      router.refresh();
+    });
   };
 
   const Icon = config.icon;
@@ -120,12 +125,12 @@ export default function DateDisplay({
 
       <Button
         onClick={handleRecord}
-        disabled={isLoading}
+        disabled={isPending}
         variant="outline"
         size="lg"
         className={`w-full rounded-2xl my-2 border px-5 py-6 text-sm font-medium transition-colors ${config.buttonClass}`}
       >
-        {isLoading ? (
+        {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
             保存中...
