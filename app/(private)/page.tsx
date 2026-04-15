@@ -32,6 +32,7 @@ export default async function Home() {
         description="次回のコンタクト交換日を確認できます。"
       >
         <DateDisplay
+          eventId={contactEvent?.id}
           eventType="contact"
           occurredAt={contactEvent?.occurred_at}
           next={contactEvent?.next_due_at}
@@ -43,6 +44,7 @@ export default async function Home() {
         description="次回の眼科受診日を確認できます。"
       >
         <DateDisplay
+          eventId={clinicEvent?.id}
           eventType="clinic"
           occurredAt={clinicEvent?.occurred_at}
           next={clinicEvent?.next_due_at}

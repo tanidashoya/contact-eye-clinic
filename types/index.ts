@@ -57,9 +57,10 @@ export interface LogoutDialogProps {
 }
 
 export interface DateDisplayProps {
+  eventId?: number;
   eventType?: string;
-  occurredAt?: string;
-  next?: string;
+  occurredAt?: string | null;
+  next?: string | null;
 }
 
 export interface UpdateNotifySettingsProps {

@@ -44,8 +44,8 @@ export type Database = {
           cycle_days: number;
           event_type: string;
           id: number;
-          next_due_at: string;
-          occurred_at: string;
+          next_due_at: string | null;
+          occurred_at: string | null;
           user_id: string;
         };
         Insert: {
@@ -53,8 +53,8 @@ export type Database = {
           cycle_days: number;
           event_type: string;
           id?: number;
-          next_due_at: string;
-          occurred_at: string;
+          next_due_at?: string | null;
+          occurred_at?: string | null;
           user_id?: string;
         };
         Update: {
@@ -62,8 +62,8 @@ export type Database = {
           cycle_days?: number;
           event_type?: string;
           id?: number;
-          next_due_at?: string;
-          occurred_at?: string;
+          next_due_at?: string | null;
+          occurred_at?: string | null;
           user_id?: string;
         };
         Relationships: [];
