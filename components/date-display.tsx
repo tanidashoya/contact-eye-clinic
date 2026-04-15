@@ -123,7 +123,7 @@ export default function DateDisplay({
                 {isPending ? (
                   <DateLoadingSpinner className={config.loadingClass} large />
                 ) : (
-                  <p className="text-3xl font-semibold tracking-tight text-stone-800 md:text-4xl">
+                  <p className="text-xl font-semibold tracking-tight text-stone-800 md:text-4xl">
                     {formatDate(next, config.emptyText)}
                   </p>
                 )}
