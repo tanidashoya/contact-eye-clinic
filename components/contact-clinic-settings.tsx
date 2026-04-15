@@ -36,20 +36,32 @@ export default function ContactClinicSettings({
       </div>
       <div className="flex flex-col mx-4 px-2 gap-4">
         <div className="flex flex-col gap-2">
-          <label htmlFor="contactCycle">コンタクト交換の周期</label>
-          <NumberInput
-            id="contactCycle"
-            numberValue={contactCycle}
-            onValueChange={handleContactCycleChange}
-          />
+          <label htmlFor="contactCycle">・コンタクト交換の周期</label>
+          <div className="flex items-center gap-2">
+            <NumberInput
+              id="contactCycle"
+              numberValue={contactCycle}
+              onValueChange={handleContactCycleChange}
+              className="w-20 text-center"
+            />
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              日ごとに交換
+            </span>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
-          <label htmlFor="clinicCycle">眼科受診の周期</label>
-          <NumberInput
-            id="clinicCycle"
-            numberValue={clinicCycle}
-            onValueChange={handleClinicCycleChange}
-          />
+          <label htmlFor="clinicCycle">・眼科受診の周期</label>
+          <div className="flex items-center gap-2">
+            <NumberInput
+              id="clinicCycle"
+              numberValue={clinicCycle}
+              onValueChange={handleClinicCycleChange}
+              className="w-20 text-center"
+            />
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              日ごとに受診
+            </span>
+          </div>
         </div>
       </div>
     </>

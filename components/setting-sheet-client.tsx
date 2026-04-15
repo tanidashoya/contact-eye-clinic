@@ -105,12 +105,10 @@ export default function SettingSheetClient({
         </div>
         <div className="flex py-2 border-t border-gray-200 bg-gray-20 justify-between items-center">
           <div className="flex flex-col ml-4">
-            <span className="text-base text-gray-600 truncate">
+            <span className="text-sm text-gray-600 truncate">
               {user.user_metadata.name}
             </span>
-            <span className="text-base text-gray-600 truncate">
-              {user.email}
-            </span>
+            <span className="text-sm text-gray-600 truncate">{user.email}</span>
           </div>
           <LogoutDialog handleLogout={handleLogout} isLoading={isLoading} />
         </div>

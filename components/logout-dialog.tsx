@@ -19,7 +19,7 @@ export default function LogoutDialog({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="mr-4" asChild>
+        <Button variant="ghost" size="icon-xs" className="mr-4" asChild>
           {isLoading ? (
             <Loader2 className="w-7 h-7 animate-spin" />
           ) : (

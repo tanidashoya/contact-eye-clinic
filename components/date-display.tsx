@@ -22,6 +22,7 @@ const EVENT_CONFIG = {
     badgeClass: "bg-emerald-100 text-emerald-700",
     buttonClass:
       "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 focus-visible:ring-emerald-200",
+    loadingClass: "text-emerald-600",
   },
   clinic: {
     icon: Eye,
@@ -34,6 +35,7 @@ const EVENT_CONFIG = {
     badgeClass: "bg-sky-100 text-sky-700",
     buttonClass:
       "border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 focus-visible:ring-sky-200",
+    loadingClass: "text-sky-600",
   },
 } as const;
 
@@ -48,6 +50,27 @@ function formatDate(value?: string, emptyText = "未登録") {
   if (!year || !month || !day) return value;
 
   return `${year}.${month}.${day}`;
+}
+
+function DateLoadingSpinner({
+  className,
+  large = false,
+}: {
+  className: string;
+  large?: boolean;
+}) {
+  return (
+    <span
+      aria-label="更新中"
+      className={`inline-flex items-center ${className}`}
+      role="status"
+    >
+      <Loader2
+        aria-hidden="true"
+        className={`${large ? "size-7 md:size-8" : "size-5"} shrink-0 animate-spin`}
+      />
+    </span>
+  );
 }
 
 export default function DateDisplay({
@@ -84,6 +107,7 @@ export default function DateDisplay({
   return (
     <div className="flex h-full flex-col gap-5">
       <div
+        aria-busy={isPending}
         className={`rounded-[1.75rem] border p-5 md:p-6 ${config.accentClass}`}
       >
         <div className="flex items-start justify-between gap-4">
@@ -95,10 +119,16 @@ export default function DateDisplay({
             </span>
             <div className="space-y-2">
               <p className="text-sm font-medium text-stone-500">次回予定日</p>
-              <p className="text-3xl font-semibold tracking-tight text-stone-800 md:text-4xl">
-                {formatDate(next, config.emptyText)}
-              </p>
-              {next && next < getTodayJST() && (
+              <div className="flex min-h-9 items-center md:min-h-10">
+                {isPending ? (
+                  <DateLoadingSpinner className={config.loadingClass} large />
+                ) : (
+                  <p className="text-3xl font-semibold tracking-tight text-stone-800 md:text-4xl">
+                    {formatDate(next, config.emptyText)}
+                  </p>
+                )}
+              </div>
+              {!isPending && next && next < getTodayJST() && (
                 <span className="inline-block text-xs text-red-600 bg-red-50 rounded-full px-2 py-0.5">
                   予定日を過ぎています
                 </span>
@@ -112,14 +142,23 @@ export default function DateDisplay({
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
-        <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50/80 p-4">
+        <div
+          aria-busy={isPending}
+          className="rounded-[1.5rem] border border-stone-200 bg-stone-50/80 p-4"
+        >
           <div className="mb-3 flex items-center gap-2 text-sm font-medium text-stone-500">
             <History className="size-4" />
             <span>前回記録日</span>
           </div>
-          <p className="text-md text-gray-500 font-semibold">
-            {formatDate(occurredAt, config.emptyText)}
-          </p>
+          <div className="flex min-h-6 items-center">
+            {isPending ? (
+              <DateLoadingSpinner className={config.loadingClass} />
+            ) : (
+              <p className="text-md text-gray-500 font-semibold">
+                {formatDate(occurredAt, config.emptyText)}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -130,17 +169,8 @@ export default function DateDisplay({
         size="lg"
         className={`w-full rounded-2xl my-2 border px-5 py-6 text-sm font-medium transition-colors ${config.buttonClass}`}
       >
-        {isPending ? (
-          <>
-            <Loader2 className="size-4 animate-spin" />
-            保存中...
-          </>
-        ) : (
-          <>
-            <CalendarCheck2 className="size-4" />
-            {config.buttonLabel}
-          </>
-        )}
+        <CalendarCheck2 className="size-4" />
+        {config.buttonLabel}
       </Button>
     </div>
   );

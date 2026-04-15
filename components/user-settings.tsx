@@ -75,23 +75,41 @@ export default function UserSettings({
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="contactNotifyBeforeDays">
-            コンタクト交換の通知前日数
+            ・コンタクト交換の通知日
           </label>
-          <NumberInput
-            id="contactNotifyBeforeDays"
-            numberValue={contactNotifyBeforeDays}
-            disabled={!isnotification}
-            onValueChange={handleContactNotifyBeforeDaysChange}
-          />
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              予定日の
+            </span>
+            <NumberInput
+              id="contactNotifyBeforeDays"
+              numberValue={contactNotifyBeforeDays}
+              disabled={!isnotification}
+              onValueChange={handleContactNotifyBeforeDaysChange}
+              className="w-20 text-center"
+            />
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              日前
+            </span>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
-          <label htmlFor="clinicNotifyBeforeDays">眼科受診の通知前日数</label>
-          <NumberInput
-            id="clinicNotifyBeforeDays"
-            numberValue={clinicNotifyBeforeDays}
-            disabled={!isnotification}
-            onValueChange={handleClinicNotifyBeforeDaysChange}
-          />
+          <label htmlFor="clinicNotifyBeforeDays">・眼科受診の通知日</label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              予定日の
+            </span>
+            <NumberInput
+              id="clinicNotifyBeforeDays"
+              numberValue={clinicNotifyBeforeDays}
+              disabled={!isnotification}
+              onValueChange={handleClinicNotifyBeforeDaysChange}
+              className="w-20 text-center"
+            />
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              日前
+            </span>
+          </div>
         </div>
       </div>
     </>
