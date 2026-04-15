@@ -17,7 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { KeyboardEvent } from "react";
+import type { FocusEvent, KeyboardEvent } from "react";
 import { useState, useTransition } from "react";
 import { getTodayJstDateString } from "@/lib/date";
 import { useRouter } from "next/navigation";
@@ -115,8 +115,7 @@ export default function DateDisplay({
   const displayOccurredAt =
     optimisticOccurredAt !== undefined ? optimisticOccurredAt : occurredAt;
   const displayNext = optimisticNext !== undefined ? optimisticNext : next;
-  const showOccurredLoading =
-    recordPending || pendingField === "occurred_at";
+  const showOccurredLoading = recordPending || pendingField === "occurred_at";
   const showNextLoading =
     recordPending ||
     pendingField === "occurred_at" ||
@@ -191,6 +190,19 @@ export default function DateDisplay({
     }
   };
 
+  const handleEditBlur = (event: FocusEvent<HTMLDivElement>) => {
+    const nextFocusedElement = event.relatedTarget;
+
+    if (
+      nextFocusedElement &&
+      event.currentTarget.contains(nextFocusedElement as Node)
+    ) {
+      return;
+    }
+
+    handleSaveDate();
+  };
+
   const handleRecord = async () => {
     startRecordTransition(async () => {
       const action =
@@ -222,7 +234,7 @@ export default function DateDisplay({
         aria-busy={showNextLoading}
         className={`rounded-[1.75rem] border p-5 md:p-6 ${config.accentClass}`}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1 space-y-3">
             <span
               className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium tracking-[0.16em] uppercase ${config.badgeClass}`}
@@ -231,14 +243,19 @@ export default function DateDisplay({
             </span>
             <div className="space-y-2">
               <p className="text-sm font-medium text-stone-500">次回予定日</p>
-              <div className="flex min-h-9 w-full min-w-0 items-center gap-2 md:min-h-10">
+              <div
+                className={`flex min-h-9 w-full min-w-0 items-center gap-3 md:min-h-10 ${
+                  isEditingNext ? "flex-wrap" : ""
+                }`}
+                onBlur={isEditingNext ? handleEditBlur : undefined}
+              >
                 {showNextLoading ? (
                   <DateLoadingSpinner className={config.loadingClass} large />
                 ) : isEditingNext ? (
                   <>
                     <Input
                       autoFocus
-                      className="h-10 min-w-0 flex-1 bg-white text-base"
+                      className="h-10 min-w-0 max-w-full flex-[1_1_9rem] bg-white text-base"
                       onChange={(event) => setDraftDate(event.target.value)}
                       onKeyDown={handleDateKeyDown}
                       type="date"
@@ -248,28 +265,32 @@ export default function DateDisplay({
                       aria-label="次回予定日を保存"
                       className="shrink-0 bg-white/80"
                       onClick={handleSaveDate}
+                      onMouseDown={(event) => event.preventDefault()}
                       size="icon-xs"
                       type="button"
                       variant="outline"
                     >
-                      <Check className="size-4" />
+                      <Check className="size-3.5" />
                     </Button>
                     <Button
                       aria-label="次回予定日の編集をキャンセル"
                       className="shrink-0 bg-white/80"
                       onClick={cancelEditing}
+                      onMouseDown={(event) => event.preventDefault()}
                       size="icon-xs"
                       type="button"
                       variant="outline"
                     >
-                      <X className="size-4" />
+                      <X className="size-3.5" />
                     </Button>
                   </>
                 ) : (
                   <>
                     <button
                       className={`text-left font-semibold tracking-tight text-stone-800 transition-colors hover:text-stone-600 disabled:pointer-events-none ${
-                        displayNext ? "text-xl md:text-4xl" : "text-base md:text-lg"
+                        displayNext
+                          ? "text-2xl md:text-4xl"
+                          : "text-base md:text-lg"
                       }`}
                       disabled={!canEdit || isAnyPending}
                       onClick={() => startEditing("next_due_at", displayNext)}
@@ -293,14 +314,20 @@ export default function DateDisplay({
                   </>
                 )}
               </div>
-              {!showNextLoading && displayNext && displayNext < getTodayJST() && (
-                <span className="inline-block text-xs text-red-600 bg-red-50 rounded-full px-2 py-0.5">
-                  予定日を過ぎています
-                </span>
-              )}
+              {!showNextLoading &&
+                displayNext &&
+                displayNext < getTodayJST() && (
+                  <span className="inline-block text-xs text-red-600 bg-red-50 rounded-full px-2 py-0.5">
+                    予定日を過ぎています
+                  </span>
+                )}
             </div>
           </div>
-          <div className="shrink-0 rounded-2xl bg-white/80 p-3 text-stone-600 shadow-sm">
+          <div
+            className={`shrink-0 rounded-2xl bg-white/80 p-3 text-stone-600 shadow-sm ${
+              isEditingNext ? "hidden sm:block" : ""
+            }`}
+          >
             <Icon className="size-5" />
           </div>
         </div>
@@ -315,7 +342,10 @@ export default function DateDisplay({
             <History className="size-4" />
             <span>前回記録日</span>
           </div>
-          <div className="flex min-h-8 w-full min-w-0 items-center gap-2">
+          <div
+            className="flex min-h-8 w-full min-w-0 items-center gap-3"
+            onBlur={isEditingOccurredAt ? handleEditBlur : undefined}
+          >
             {showOccurredLoading ? (
               <DateLoadingSpinner className={config.loadingClass} />
             ) : isEditingOccurredAt ? (
@@ -332,7 +362,8 @@ export default function DateDisplay({
                   aria-label="前回記録日を保存"
                   className="shrink-0 bg-white/80"
                   onClick={handleSaveDate}
-                  size="icon-xs"
+                  onMouseDown={(event) => event.preventDefault()}
+                  size="icon-sm"
                   type="button"
                   variant="outline"
                 >
@@ -342,7 +373,8 @@ export default function DateDisplay({
                   aria-label="前回記録日の編集をキャンセル"
                   className="shrink-0 bg-white/80"
                   onClick={cancelEditing}
-                  size="icon-xs"
+                  onMouseDown={(event) => event.preventDefault()}
+                  size="icon-sm"
                   type="button"
                   variant="outline"
                 >
@@ -364,7 +396,9 @@ export default function DateDisplay({
                     aria-label="前回記録日を編集"
                     className="size-8 bg-white/70 text-stone-500 hover:text-stone-700"
                     disabled={isAnyPending}
-                    onClick={() => startEditing("occurred_at", displayOccurredAt)}
+                    onClick={() =>
+                      startEditing("occurred_at", displayOccurredAt)
+                    }
                     size="icon-sm"
                     type="button"
                     variant="outline"
@@ -383,7 +417,7 @@ export default function DateDisplay({
         disabled={isAnyPending}
         variant="outline"
         size="lg"
-        className={`w-full rounded-2xl my-2 border px-5 py-6 text-sm font-medium transition-colors ${config.buttonClass}`}
+        className={`w-full rounded-2xl shadow-gray-200 shadow-lg my-2 border px-5 py-6 text-sm font-medium transition-colors ${config.buttonClass}`}
       >
         <CalendarCheck2 className="size-4" />
         {config.buttonLabel}

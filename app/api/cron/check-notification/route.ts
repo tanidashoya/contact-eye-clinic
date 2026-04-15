@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
 
     // コンタクト交換イベントの next_due_at が存在する場合
     if (contactEvent?.next_due_at) {
-      //new Date(contactEvent.next_due_at)：next_due_atをDateオブジェクトに変換(UTC時間)
+      // next_due_at をJSTの暦日として扱い、通知日を計算する
       const notifyDateStr = addDaysToDateString(
         contactEvent.next_due_at,
         -settings.contact_notify_before_days

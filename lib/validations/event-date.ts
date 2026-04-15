@@ -1,17 +1,10 @@
 import { z } from "zod";
+import { isValidDateString } from "@/lib/date";
 
 function normalizeTrimmedString(value: unknown) {
   if (value == null) return "";
   if (typeof value === "string") return value.trim();
   return value;
-}
-
-function isValidDateString(value: string) {
-  const date = new Date(`${value}T00:00:00Z`);
-
-  return (
-    !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
-  );
 }
 
 const dateFieldSchema = z.preprocess(
