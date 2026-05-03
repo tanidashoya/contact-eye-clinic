@@ -1,6 +1,6 @@
 "use client";
 //このコンポーネントは入力値を最初はstring型として、空白での0表示を防ぎつつ、フォーカスが外れたら値を更新してNumber型に変換する。
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "./ui/input";
 
 interface NumberInputProps extends Omit<
@@ -20,10 +20,6 @@ export default function NumberInput({
   const [localValue, setLocalValue] = useState(String(numberValue));
 
   // 外部のnumberValueが変わったらローカルも同期
-  useEffect(() => {
-    setLocalValue(String(numberValue));
-  }, [numberValue]);
-
   // 入力中は文字列のまま保持（空文字もOK）
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalValue(e.target.value);

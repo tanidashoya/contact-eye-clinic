@@ -1,22 +1,31 @@
 "use server";
-import { createClient } from "@/utils/supabase/server";
-import { UpdateClinicSettingsProps } from "@/types";
 
-export default async function updateClinicSettings({
-  user,
-  clinicCycle,
-}: UpdateClinicSettingsProps) {
-  const supabase = await createClient();
-  //コンタクト交換イベント設定を更新
-  const { error: updateClinicSettingsError } = await supabase
+import { updateClinicSettingsSchema } from "@/lib/validations/settings";
+import { createAuthenticatedClient } from "./require-auth-user";
+
+export default async function updateClinicSettings(input: unknown) {
+  const parsed = updateClinicSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      error: parsed.error.issues[0]?.message ?? "入力内容を確認してください",
+    };
+  }
+
+  const { error: authError, supabase, user } = await createAuthenticatedClient();
+  if (authError) return { error: authError };
+
+  const { clinicCycle } = parsed.data;
+
+  const { error } = await supabase
     .from("event_settings")
-    .update({
-      cycle_days: clinicCycle,
-    })
+    .update({ cycle_days: clinicCycle })
     .eq("user_id", user.id)
     .eq("event_type", "clinic");
-  if (updateClinicSettingsError) {
-    console.error(updateClinicSettingsError);
-    return { error: "眼科受診イベント設定の更新に失敗しました" };
+
+  if (error) {
+    console.error(error);
+    return { error: "眼科受診周期の更新に失敗しました" };
   }
+
+  return { error: null };
 }

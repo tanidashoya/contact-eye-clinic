@@ -1,5 +1,6 @@
 // サービスロールキーを使用して管理者権限でデータベースにアクセスするクライアント
 // Cronジョブやバックグラウンド処理などで使用
+import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/database.types";
 

@@ -44,7 +44,7 @@ export default function OneSignalIdentify({
     */
     const identifyUser = async () => {
       const onNotificationPermissionGranted = async () => {
-        await updateNotifySettings({ user, notifyEnabled: true });
+        await updateNotifySettings({ notifyEnabled: true });
         window.dispatchEvent(new CustomEvent("onesignal-permission-granted"));
       };
 

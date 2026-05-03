@@ -13,7 +13,9 @@ export async function signup(formData: FormData) {
 
   if (!result.success) {
     return {
-      error: result.error.issues[0]?.message ?? "入力内容を確認してください",
+      error:
+        result.error.issues[0]?.message ??
+        "入力内容を確認してください",
     };
   }
 
@@ -31,7 +33,7 @@ export async function signup(formData: FormData) {
 
   if (signUpError) {
     console.error("SignUp Error:", signUpError.message, signUpError.code);
-    return { error: `新規登録に失敗しました: ${signUpError.message}` };
+    return { error: "新規登録に失敗しました。入力内容を確認してください。" };
   }
 
   redirect("/");

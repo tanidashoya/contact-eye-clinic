@@ -87,7 +87,6 @@ export default function SettingSheetClient({
         </SheetTitle>
         <div className="h-full overflow-y-auto flex flex-col justify-center">
           <UserSettings
-            user={user}
             isnotification={isnotification}
             setIsnotification={setIsnotification}
             clinicNotifyBeforeDays={clinicNotifyBeforeDays}
@@ -96,7 +95,6 @@ export default function SettingSheetClient({
             setContactNotifyBeforeDays={setContactNotifyBeforeDays}
           />
           <ContactClinicSettings
-            user={user}
             contactCycle={contactCycle}
             setContactCycle={setContactCycle}
             clinicCycle={clinicCycle}

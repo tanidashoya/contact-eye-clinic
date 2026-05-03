@@ -19,7 +19,7 @@ export default async function Home() {
     contactEvent,
     clinicEvent,
     error: getNewEventError,
-  } = await getNewEvents(user.id);
+  } = await getNewEvents();
   if (getNewEventError) {
     console.error(getNewEventError);
     redirect("/login?error=get_new_event_error");

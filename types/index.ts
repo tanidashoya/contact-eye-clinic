@@ -24,7 +24,6 @@ export interface SettingSheetClientProps {
 }
 
 export interface UserSettingsProps {
-  user: User;
   isnotification: boolean;
   setIsnotification: (isnotification: boolean) => void;
   clinicNotifyBeforeDays: number;
@@ -34,17 +33,14 @@ export interface UserSettingsProps {
 }
 
 export interface UpdateContactSettingsProps {
-  user: User;
   contactCycle: number;
 }
 
 export interface UpdateClinicSettingsProps {
-  user: User;
   clinicCycle: number;
 }
 
 export interface ContactClinicSettingsProps {
-  user: User;
   contactCycle: number;
   setContactCycle: (contactCycle: number) => void;
   clinicCycle: number;
@@ -64,12 +60,10 @@ export interface DateDisplayProps {
 }
 
 export interface UpdateNotifySettingsProps {
-  user: User;
   notifyEnabled: boolean;
 }
 
 export interface UpdateNotifyBeforeDaysProps {
-  user: User;
   contactNotifyBeforeDays: number;
   clinicNotifyBeforeDays: number;
 }

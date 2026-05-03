@@ -9,7 +9,6 @@ import updateNotifyBeforeDays from "@/app/(private)/action/update-notify-before-
 import OneSignal from "react-onesignal";
 
 export default function UserSettings({
-  user,
   isnotification,
   setIsnotification,
   clinicNotifyBeforeDays,
@@ -21,7 +20,6 @@ export default function UserSettings({
     const newValue = !isnotification;
     setIsnotification(newValue);
     const result = await updateNotifySettings({
-      user,
       notifyEnabled: newValue,
     });
     // エラーが発生した場合は状態を元に戻す
@@ -41,7 +39,6 @@ export default function UserSettings({
   const handleContactNotifyBeforeDaysChange = (value: number) => {
     setContactNotifyBeforeDays(value);
     updateNotifyBeforeDays({
-      user,
       contactNotifyBeforeDays: value,
       clinicNotifyBeforeDays,
     });
@@ -50,7 +47,6 @@ export default function UserSettings({
   const handleClinicNotifyBeforeDaysChange = (value: number) => {
     setClinicNotifyBeforeDays(value);
     updateNotifyBeforeDays({
-      user,
       contactNotifyBeforeDays,
       clinicNotifyBeforeDays: value,
     });

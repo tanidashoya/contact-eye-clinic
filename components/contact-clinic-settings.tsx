@@ -6,7 +6,6 @@ import updateClinicSettings from "@/app/(private)/action/update-clinic-settings"
 import { ContactClinicSettingsProps } from "@/types";
 
 export default function ContactClinicSettings({
-  user,
   contactCycle,
   setContactCycle,
   clinicCycle,
@@ -15,7 +14,6 @@ export default function ContactClinicSettings({
   const handleContactCycleChange = (value: number) => {
     setContactCycle(value); //正解の値を更新
     updateContactSettings({
-      user: user,
       contactCycle: value,
     });
   };
@@ -23,7 +21,6 @@ export default function ContactClinicSettings({
   const handleClinicCycleChange = (value: number) => {
     setClinicCycle(value); //正解の値を更新
     updateClinicSettings({
-      user: user,
       clinicCycle: value,
     });
   };
