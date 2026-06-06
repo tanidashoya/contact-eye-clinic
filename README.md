@@ -415,7 +415,7 @@ pnpm dev
   "crons": [
     {
       "path": "/api/cron/check-notification",
-      "schedule": "0 11 * * *"
+      "schedule": "0 4 * * *"
     }
   ]
 }
@@ -424,7 +424,7 @@ pnpm dev
 意味:
 
 - 毎日 1 回、通知チェック API を実行する設定です。
-- スケジュールの解釈はデプロイ先の Cron 実行仕様に依存します。Vercel では通常 UTC 基準で扱います。
+- Vercel Cron は UTC 基準で扱うため、`0 4 * * *` は日本時間 13:00 の実行を意味します。
 
 ## 14. 現在の実装上の注意点
 
@@ -459,7 +459,8 @@ pnpm dev
 ### 3. `timezone` カラムは存在するが通知判定には未使用
 
 `user_settings.timezone` は型定義に存在しますが、通知判定ロジックでは参照されていません。  
-現在の `/api/cron/check-notification` は `toISOString().split("T")[0]` を使って日付比較しているため、実質的に UTC ベースの処理です。
+現在の `/api/cron/check-notification` は `lib/date.ts` の `getTodayJstDateString()` を使って日本時間の暦日で日付比較しています。  
+ただしユーザーごとのタイムゾーン切り替えには対応しておらず、全ユーザー共通で日本時間基準です。
 
 ### 4. 画面文言やメタデータに暫定値が残っている
 
